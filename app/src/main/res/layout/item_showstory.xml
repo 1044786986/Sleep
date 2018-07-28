@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:padding="10dp"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tvName"
+            android:text="青蛙王子"
+            android:textSize="16sp"
+            android:maxWidth="200dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:gravity="right"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tvDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="2dp"
+                android:text="10:25" />
+
+        <ImageView
+            android:id="@+id/ivPlay"
+            android:src="@drawable/play"
+            android:layout_width="@dimen/dp_20"
+            android:layout_height="@dimen/dp_20" />
+
+        <ImageView
+            android:id="@+id/ivDownLoad"
+            android:src="@drawable/download"
+            android:layout_marginLeft="5dp"
+            android:layout_width="@dimen/dp_20"
+            android:layout_height="@dimen/dp_20" />
+    </LinearLayout>
+
+    </LinearLayout>
+
+    <View
+        android:background="@color/rvLine"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
+</LinearLayout>
