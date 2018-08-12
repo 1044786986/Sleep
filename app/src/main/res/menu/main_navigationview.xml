@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/nav_my"
+            android:icon="@mipmap/ic_launcher"
+            android:title="个人信息"/>
+
+        <item android:id="@+id/nav_download"
+            android:icon="@mipmap/ic_launcher"
+            android:title="下载列表"/>
+
+        <item android:id="@+id/nav_timerClose"
+            android:icon="@mipmap/ic_launcher"
+            android:title="定时关闭"/>
+
+        <item android:id="@+id/nav_problem"
+            android:icon="@mipmap/ic_launcher"
+            android:title="常见问题"/>
+
+        <item android:id="@+id/nav_setting"
+            android:icon="@mipmap/ic_launcher"
+            android:title="设置"/>
+    </group>
+</menu>

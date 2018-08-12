@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/dp_50"
+    android:id="@+id/linearLayout_downloading"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:gravity="center"
+        android:padding="@dimen/dp_5"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+    <CheckBox
+        android:id="@+id/cbSelect"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvName"
+            android:textSize="@dimen/sp_13"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="你把我灌醉" />
+
+        <TextView
+            android:id="@+id/tvAuthor"
+            android:textSize="@dimen/sp_12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="邓紫棋" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progress"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:max="100"
+        android:layout_marginLeft="@dimen/dp_10"
+        android:layout_width="@dimen/dp_150"
+        android:layout_height="@dimen/dp_5" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginLeft="@dimen/dp_5"
+        android:layout_width="@dimen/dp_100"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tvSpeed"
+            android:text="255kb/s"
+            android:textSize="@dimen/sp_13"
+            android:layout_width="@dimen/dp_60"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/ivMore"
+            android:src="@drawable/more"
+            android:layout_marginLeft="@dimen/dp_5"
+            android:layout_width="@dimen/dp_30"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:background="@color/rvLine"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
+</LinearLayout>

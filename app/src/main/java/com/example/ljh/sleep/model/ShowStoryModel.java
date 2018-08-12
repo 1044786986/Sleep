@@ -18,7 +18,7 @@ import io.reactivex.schedulers.Schedulers;
 public class ShowStoryModel implements ShowStoryContract.ShowStoryModel{
     @Override
     public void getData(ShowStoryRequestBean bean, final MyRetrofitCallback callBack) {
-        RetrofitUtils.getRetrofitRx(RetrofitUtils.BASE_URL)
+        RetrofitUtils.getRetrofitRx2Gson(RetrofitUtils.BASE_URL)
                 .create(IRetrofit.class)
                 .getShowStoryData(bean.getType())
                 .subscribeOn(Schedulers.io())

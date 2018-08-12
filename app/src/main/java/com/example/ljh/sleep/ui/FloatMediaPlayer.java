@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
 import android.os.Build;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -91,8 +90,6 @@ public class FloatMediaPlayer {
         this.mediaPlayer = builder.mediaPlayerView;
         this.logoViewHeight = builder.logoViewHeight;
         mediaPlayerWidth = (int) context.getResources().getDimension(R.dimen.dp_250);
-//        mediaPlayerWidth = ConvertUtils.dp2px(context,mediaPlayerWidth);
-//        Log.i("aaa","mediaPlayerWidth = " + mediaPlayerWidth);
         mediaPlayerHeight = logoViewHeight;
         init();
     }
@@ -105,7 +102,6 @@ public class FloatMediaPlayer {
                 case MotionEvent.ACTION_DOWN:
                     inLogoX = motionEvent.getX();
                     inLogoY = motionEvent.getY();
-//                    Log.i("aaa","down = " + inLogoX + " " + inLogoY);
                     break;
                 case MotionEvent.ACTION_MOVE:
                     if((isOpen && logoX != 0 && logoX != screenWidth) || (isOpen && oldLogoY != logoY)){
@@ -114,7 +110,6 @@ public class FloatMediaPlayer {
                     move(motionEvent.getRawX() - inLogoX,motionEvent.getRawY() - inLogoY);
                     break;
                 case MotionEvent.ACTION_UP:
-//                    Log.i("aaa","up");
                     /**
                      * 判断是否需要恢复位置
                      */
@@ -139,7 +134,6 @@ public class FloatMediaPlayer {
      */
     private synchronized void openMediaPlayer(){
         if(!isOpen && !isMoving) {
-//            Log.i("aaa","openMediaPlayer()");
             windowManager.addView(mediaPlayer,mediaPlayerLayoutParams);
             isOpen = true;
             valueAnimator = getCurLocation() == LEFT ?
@@ -183,7 +177,6 @@ public class FloatMediaPlayer {
      */
     private synchronized void closeMediaPlayer(){
         if (isOpen) {
-//            Log.i("aaa","closeMediaPlayer()");
             isOpen = false;
             valueAnimator = getCurLocation() == LEFT ?
                     ValueAnimator.ofInt(mediaPlayerX, mediaPlayerX - mediaPlayerWidth - logoViewHeight) :
@@ -220,7 +213,6 @@ public class FloatMediaPlayer {
     private void move(float x,float y){
 //        if (Math.abs(x - logoX) > 10|| Math.abs(y - logoY) > 10){
             isMoving = true;
-//            Log.i("aaa","move");
             if(y <= statusBarHeight){
                 y = statusBarHeight;
             }
@@ -293,7 +285,7 @@ public class FloatMediaPlayer {
      * 更新音乐悬浮logo的位置
      */
     private void updateLogoView(){
-//        Log.i("aaa","logoX,logoY = " + logoX + "    " + logoY);
+//        rotationLogoView();
         logoLayoutParams.x = logoX;
         logoLayoutParams.y = logoY;
         windowManager.updateViewLayout(logoView,logoLayoutParams);
@@ -351,10 +343,9 @@ public class FloatMediaPlayer {
         logoY = sharedPreferences.getInt(LOGO_Y_KEY,screenHeight / 2);
         oldLogoY = logoY;
         mediaPlayerX = getCurLocation() == LEFT?logoX - mediaPlayerWidth : logoX;
-//        Log.i("aaa",mediaPlayerX+"");
         mediaPlayerY = (logoY > screenHeight - mediaPlayerHeight?logoY - mediaPlayerHeight:logoY)- statusBarHeight;
-        Log.i("aaa","FloatMediaPlayer.logoY = " + logoY);
-        Log.i("aaa","FloatMediaPlayer.mediaPlayerY = " + mediaPlayerY);
+//        Log.i("aaa","FloatMediaPlayer.logoY = " + logoY);
+//        Log.i("aaa","FloatMediaPlayer.mediaPlayerY = " + mediaPlayerY);
 
         windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         /**
@@ -370,7 +361,6 @@ public class FloatMediaPlayer {
         logoLayoutParams.alpha = 1;
         logoLayoutParams.x = logoX;
         logoLayoutParams.y = logoY;
-        Log.i("aaa","FloatMediaPlayer.logoLayoutParams.y = " + logoLayoutParams.y);
         logoView.setOnTouchListener(logoViewListener);
 
         /**
@@ -401,7 +391,6 @@ public class FloatMediaPlayer {
             logoLayoutParams.type = WindowManager.LayoutParams.TYPE_PHONE;
 //            mediaPlayerLayoutParams.type = WindowManager.LayoutParams.TYPE_PHONE;
         }
-//        windowManager.addView(mediaPlayer,mediaPlayerLayoutParams);
         windowManager.addView(logoView,logoLayoutParams);
     }
 
@@ -444,4 +433,9 @@ public class FloatMediaPlayer {
             return new FloatMediaPlayer(this);
         }
     }
+
+//    public interface LogoViewRotationListener{
+//        void start();
+//        void stop();
+//    }
 }

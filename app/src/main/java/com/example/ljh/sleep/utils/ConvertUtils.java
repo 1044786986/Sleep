@@ -85,9 +85,9 @@ public class ConvertUtils {
         return time+"";
     }
 
-    public static String duration2min(int second){
+    public static String duration2min(int duration){
         StringBuilder time = new StringBuilder();
-//        long second = duration / 1000;
+        int second = duration / 1000;
         int minute = 0;
         int hour = 0;
         if(second >= 60){

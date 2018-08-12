@@ -3,22 +3,30 @@ package com.example.ljh.sleep.bean;
 public class MusicInfoBean {
     private String name;
     private String author;
-    private String contentType;
     private String duration;
     private String url;
     private String type;
+    private String date;
     private int progress;
-    private boolean local;
-
-    public String getContentType() {
-        return contentType;
-    }
-
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
-
     private int id;
+    private boolean local;
+    private int position;
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public int getPosition(){
+        return position;
+    }
+
+    public void setPosition(int position){
+        this.position = position;
+    }
 
     public String getAuthor() {
         return author;

@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.example.ljh.sleep.application.ErrorTipApp;
-import com.example.ljh.sleep.application.SharedApp;
+import com.example.ljh.sleep.application.KeyApp;
 import com.example.ljh.sleep.bean.LoginBean;
 import com.example.ljh.sleep.callback.MyRetrofitCallback;
 import com.example.ljh.sleep.contract.LoginContract;
@@ -60,15 +60,15 @@ public class LoginPresenter implements LoginContract.LoginPresenter{
     @Override
     public void init() {
         SharedPreferences sharedPreferences =
-                loginView.getContext().getSharedPreferences(SharedApp.name, Context.MODE_PRIVATE);
-        if(sharedPreferences.getBoolean(SharedApp.REMEMBER_PASSWORD,false)){
+                loginView.getContext().getSharedPreferences(KeyApp.name, Context.MODE_PRIVATE);
+        if(sharedPreferences.getBoolean(KeyApp.REMEMBER_PASSWORD,false)){
             loginView.setCbRemember();
         }
-        if(sharedPreferences.getBoolean(SharedApp.AUTO_LOGIN,false)){
+        if(sharedPreferences.getBoolean(KeyApp.AUTO_LOGIN,false)){
             loginView.setCbAuto();
         }
-        loginView.setUsername(sharedPreferences.getString(SharedApp.LOGIN_NAME,""));
-        loginView.setUsername(sharedPreferences.getString(SharedApp.LOGIN_PASSWORD,""));
+        loginView.setUsername(sharedPreferences.getString(KeyApp.LOGIN_NAME,""));
+        loginView.setUsername(sharedPreferences.getString(KeyApp.LOGIN_PASSWORD,""));
     }
 
 }

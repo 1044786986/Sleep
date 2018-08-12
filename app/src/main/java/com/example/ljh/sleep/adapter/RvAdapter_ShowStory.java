@@ -3,7 +3,6 @@ package com.example.ljh.sleep.adapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,11 +12,9 @@ import android.widget.TextView;
 import com.example.ljh.sleep.R;
 import com.example.ljh.sleep.activity.MainActivity;
 import com.example.ljh.sleep.bean.MusicInfoBean;
-import com.example.ljh.sleep.callback.MediaPlayerCallback;
 import com.example.ljh.sleep.callback.MediaPlayerListener;
 import com.example.ljh.sleep.presenter.ShowStoryPresenter;
-import com.example.ljh.sleep.utils.ConvertUtils;
-import com.example.ljh.sleep.utils.UpdateDuration;
+import com.example.ljh.sleep.utils.DownLoadUtils2;
 
 import java.util.List;
 
@@ -27,33 +24,32 @@ public class RvAdapter_ShowStory extends RecyclerView.Adapter<RvAdapter_ShowStor
     private Context context;
     private ShowStoryPresenter showStoryPresenter;
     private MediaPlayerListener mediaPlayerListener;    //控制播放、停止等监听（MainActivity）
-    private MediaPlayerCallback mediaPlayerCallback = new MediaPlayerCallback() {   //播放过程监听回调
-        @Override
-        public void onStart(int id,long duration) {
-//            Log.i("aaa","RvAdapter_ShowStory.mediaPlayerCallback.start() " + duration);
-            String durationString = ConvertUtils.duration2min(duration);
-//            Log.i("aaa","RvAdapter_ShowStory.durationString = " + durationString);
-            UpdateDuration.updateDuration(id,durationString);
-        }
-
-        @Override
-        public void onComplete() {
-            Log.i("aaa","RvAdapter_ShowStory.mediaPlayerCallback.onComplete()");
-            MainActivity.getPresenter().pauseTimer();
-        }
-
-        @Override
-        public void onError() {
-            MainActivity.getPresenter().pauseTimer();
-        }
-    };
+//    private MediaPlayerCallback mediaPlayerCallback = new MediaPlayerCallback() {   //播放过程监听回调
+//        @Override
+//        public void onStart(int id,long duration) {
+//            String durationString = ConvertUtils.duration2min(duration);
+//            UpdateDuration.updateDuration(id,durationString);
+//        }
+//
+//        @Override
+//        public void onComplete() {
+//            Log.i("aaa","RvAdapter_ShowStory.mediaPlayerCallback.onComplete()");
+//            MainActivity.getPresenter().pauseTimer();
+//            MainActivity.getPresenter().next();
+//        }
+//
+//        @Override
+//        public void onError() {
+//            MainActivity.getPresenter().pauseTimer();
+//        }
+//    };
 
     public RvAdapter_ShowStory(Context context, List<MusicInfoBean> dataList, ShowStoryPresenter showStoryPresenter){
         this.dataList = dataList;
         this.context = context;
         this.showStoryPresenter = showStoryPresenter;
 //        mediaPlayerListener = (MediaPlayerListener) context;
-        mediaPlayerListener = (MediaPlayerListener) MainActivity.getPresenter();
+        mediaPlayerListener =  MainActivity.getPresenter();
         layoutInflater = LayoutInflater.from(context);
     }
 
@@ -66,7 +62,9 @@ public class RvAdapter_ShowStory extends RecyclerView.Adapter<RvAdapter_ShowStor
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
-        final MusicInfoBean bean = dataList.get(position);
+        MusicInfoBean bean = dataList.get(position);
+        bean.setPosition(position);
+        final MusicInfoBean musicInfoBean = bean;
         holder.tvName.setText(bean.getName());
         holder.tvDuration.setText(bean.getDuration());
         /**
@@ -75,7 +73,16 @@ public class RvAdapter_ShowStory extends RecyclerView.Adapter<RvAdapter_ShowStor
         holder.ivPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mediaPlayerListener.play(bean,mediaPlayerCallback);
+                mediaPlayerListener.play(musicInfoBean);
+            }
+        });
+        /**
+         * 下载
+         */
+        holder.ivDownLoad.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MainActivity.getPresenter().downLoad(musicInfoBean, DownLoadUtils2.DOWNLOAD);
             }
         });
     }

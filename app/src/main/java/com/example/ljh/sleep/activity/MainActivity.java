@@ -4,10 +4,13 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -17,19 +20,22 @@ import android.widget.TextView;
 
 import com.example.ljh.sleep.R;
 import com.example.ljh.sleep.bean.MusicInfoBean;
+import com.example.ljh.sleep.callback.PermissionResultCallback;
 import com.example.ljh.sleep.contract.MainContract;
 import com.example.ljh.sleep.presenter.MainPresenter;
 import com.example.ljh.sleep.service.MediaPlayerService;
 import com.example.ljh.sleep.ui.CircleImageDrawable;
 import com.example.ljh.sleep.ui.FloatMediaPlayer;
 
-public class MainActivity extends FragmentActivity implements MainContract.MainView,View.OnClickListener{
+public class MainActivity extends PermissionManagerActivity implements MainContract.MainView,View.OnClickListener{
     private View mediaPlayerView;       //音乐控制器视图
     private ImageView mediaPlayerLogo;  //音乐悬浮球logo
+    private CircleImageDrawable circleImageDrawable;
     private ImageView ivNext,ivPrev,ivPlay;//上一首、下一首、暂停
     private TextView tvName,tvAuthor;   //名字、作者
     private TextView tvDuration,tvTimer;//总时长、计时器
     private SeekBar seekBar;
+    private NavigationView navigationView;
 
     private LinearLayout linearLayout_home,linearLayout_folder,linearLayout_bottom;//底部导航栏
     private ImageView ivCloud,ivFolder; //底部导航栏图片
@@ -42,13 +48,15 @@ public class MainActivity extends FragmentActivity implements MainContract.MainV
     private static MainPresenter mainPresenter;
 
     private Bundle saveInstanceState;
-    private int curPos = 0; //当前页面
+    private int curPos = 0; //记录在第几个页面
+    private boolean isTrackingTouch = false;//是否在拖动进度条
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.saveInstanceState = saveInstanceState;
         setContentView(R.layout.activity_main);
+//        getSupportActionBar().hide();
         init();
         mainPresenter.bindMediaPlayService();
         mainPresenter.initAd();     //初始化广告页面
@@ -73,10 +81,10 @@ public class MainActivity extends FragmentActivity implements MainContract.MainV
                 }
                 break;
             case R.id.ivPrev:
-
+                mainPresenter.prev();
                 break;
             case R.id.ivNext:
-
+                mainPresenter.next();
                 break;
         }
     }
@@ -87,17 +95,20 @@ public class MainActivity extends FragmentActivity implements MainContract.MainV
     private SeekBar.OnSeekBarChangeListener onSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
         @Override
         public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-
+            mainPresenter.updateTimer(i);
         }
 
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
-
+            isTrackingTouch = true;
+            mainPresenter.pauseTimer();
         }
 
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
-
+            Log.i("aaa","onStopTrackingTouch()");
+            isTrackingTouch = false;
+            mainPresenter.seekToProgress();
         }
     };
 
@@ -107,7 +118,7 @@ public class MainActivity extends FragmentActivity implements MainContract.MainV
     @Override
     public void initFloatWindow() {
         mediaPlayerLogoBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.cd);
-        CircleImageDrawable circleImageDrawable = new CircleImageDrawable(this,mediaPlayerLogoBitmap);
+        circleImageDrawable = new CircleImageDrawable(this,mediaPlayerLogoBitmap);
         mediaPlayerLogo = new ImageView(this);
         mediaPlayerLogo.setImageDrawable(circleImageDrawable);
         //重置imageView的高度
@@ -129,8 +140,6 @@ public class MainActivity extends FragmentActivity implements MainContract.MainV
         tvAuthor = mediaPlayerView.findViewById(R.id.tvAuthor);
         tvDuration = mediaPlayerView.findViewById(R.id.tvDuration);
         tvTimer = mediaPlayerView.findViewById(R.id.tvTimer);
-//        tvTimer.setFormat("0"+String.valueOf(1)+":%s");
-//        tvTimer.start();
         seekBar = mediaPlayerView.findViewById(R.id.seekBar);
         seekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
 
@@ -140,6 +149,7 @@ public class MainActivity extends FragmentActivity implements MainContract.MainV
                 .setMediaPlayerView(mediaPlayerView)
                 .setLogoViewHeight(circleImageDrawable.getIntrinsicHeight())
                 .build();
+        mainPresenter.initRotationLogo();
     }
 
     /**
@@ -153,9 +163,19 @@ public class MainActivity extends FragmentActivity implements MainContract.MainV
     }
 
     @Override
+    public void resetSeekBar() {
+        seekBar.setProgress(0);
+        seekBar.setSecondaryProgress(0);
+    }
+
+    @Override
     public void updateSeekBar(int i) {
-//        Log.i("aaa","updateSeekBar = " + i);
         seekBar.setProgress(i);
+    }
+
+    @Override
+    public void updateSecondSeekBar(int i) {
+        seekBar.setSecondaryProgress(i);
     }
 
     @Override
@@ -185,6 +205,7 @@ public class MainActivity extends FragmentActivity implements MainContract.MainV
         }
     }
 
+
     @Override
     public void showPlayIcon() {
         ivPlay.setImageResource(R.drawable.play);
@@ -207,6 +228,26 @@ public class MainActivity extends FragmentActivity implements MainContract.MainV
         tvCloud = findViewById(R.id.tvCloud);
         tvFolder = findViewById(R.id.tvFolder);
 
+        navigationView = findViewById(R.id.navigationView);
+        navigationView.setItemIconTintList(null);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()){
+                    case R.id.nav_my:
+                        break;
+                    case R.id.nav_download:
+                        mainPresenter.toDownLoadActivity();
+                        break;
+                    case R.id.nav_problem:
+                        break;
+                    case R.id.nav_setting:
+                        break;
+                }
+                return false;
+            }
+        });
+
         fragmentManager = getSupportFragmentManager();
         mainPresenter = new MainPresenter(this);
     }
@@ -214,6 +255,22 @@ public class MainActivity extends FragmentActivity implements MainContract.MainV
     @Override
     public void showBottomView() {
         linearLayout_bottom.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void checkPermission(String[] permissions, PermissionResultCallback callback) {
+        applyPermission(permissions,callback);
+    }
+
+    @Override
+    public void finishView() {
+        finish();
+    }
+
+
+    @Override
+    public boolean isTrackingTouch() {
+        return isTrackingTouch;
     }
 
     @Override
@@ -234,6 +291,11 @@ public class MainActivity extends FragmentActivity implements MainContract.MainV
     @Override
     public FragmentManager getMyFragmentManager() {
         return fragmentManager;
+    }
+
+    @Override
+    public ImageView getMediaPlayerLogo() {
+        return mediaPlayerLogo;
     }
 
     @Override

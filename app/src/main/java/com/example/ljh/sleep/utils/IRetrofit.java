@@ -6,10 +6,13 @@ import com.example.ljh.sleep.bean.RegisterResponseBean;
 import com.example.ljh.sleep.bean.ShowStoryResponseBean;
 import com.example.ljh.sleep.bean.UpdateDurationBean;
 
+import java.io.InputStream;
+
 import io.reactivex.Observable;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
 
 /**
@@ -48,4 +51,7 @@ public interface IRetrofit {
     @FormUrlEncoded
     @POST("updateDuration")
     Call<UpdateDurationBean> updateDuration(@Field("id") int id, @Field("duration") String duration);
+
+    @GET("")
+    Observable<InputStream> downLoad();
 }

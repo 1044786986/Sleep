@@ -6,8 +6,6 @@ import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
 
-import com.example.ljh.sleep.callback.AlertDialogCallback;
-
 /**
  * 封装显示提示消息的方法
  */
@@ -58,8 +56,14 @@ public class ShowTipUtils {
                     }
                 });
             }
+            builder.setCancelable(false);
             AlertDialog alertDialog = builder.create();
             alertDialog.show();
         }
+    }
+
+    public interface AlertDialogCallback {
+        void positive();
+        void negative();
     }
 }

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:id="@+id/linearLayout_refresh_content"
+    android:background="@color/appBackground">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:src="@mipmap/ic_launcher"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/dp_10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/tvPull"
+        android:text="下拉刷新"
+        android:textSize="@dimen/sp_15"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/dp_5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/tvRefresh"
+        android:text="正在刷新"
+        android:textSize="@dimen/sp_15"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/dp_5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</LinearLayout>

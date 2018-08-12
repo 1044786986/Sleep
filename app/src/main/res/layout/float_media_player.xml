@@ -81,7 +81,6 @@
 
             <TextView
                 android:id="@+id/tvName"
-                android:text="喜欢你"
                 android:textColor="@color/mediaPlayText"
                 android:textSize="@dimen/sp_12"
                 android:focusable="true"
@@ -93,7 +92,6 @@
 
             <TextView
                 android:id="@+id/tvAuthor"
-                android:text="邓紫棋"
                 android:textColor="@color/mediaPlayText"
                 android:textSize="@dimen/sp_9"
                 android:layout_width="wrap_content"

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/appBackground">
+
+    <Button
+        android:id="@+id/button"
+        android:text="查看线程"
+        android:layout_marginTop="@dimen/dp_5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:text="正在下载"
+        android:textSize="@dimen/sp_15"
+        android:background="#cdcdcd"
+        android:gravity="center"
+        android:padding="@dimen/dp_5"
+        android:layout_marginTop="@dimen/dp_10"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/tvTip1"
+        android:text="没有正在下载的任务"
+        android:visibility="gone"
+        android:padding="@dimen/dp_20"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvDownLoading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
+
+    <TextView
+        android:text="已下载"
+        android:textSize="@dimen/sp_15"
+        android:background="#cdcdcd"
+        android:gravity="center"
+        android:padding="@dimen/dp_5"
+        android:layout_marginTop="@dimen/dp_10"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/tvTip2"
+        android:text="没有下载完成的任务"
+        android:visibility="gone"
+        android:padding="@dimen/dp_20"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvDownLoaded"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
+</LinearLayout>

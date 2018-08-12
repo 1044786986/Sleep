@@ -31,7 +31,7 @@ public class LauncherModel implements LauncherContract.ILauncherModel{
 
     @Override
     public void getAd(final Context context, final int width, final int height, final MyRetrofitCallback callBack) {
-        RetrofitUtils.getRetrofitRx(baseUrl)
+        RetrofitUtils.getRetrofitRx2Gson(baseUrl)
                 .create(IRetrofit.class)
                 .getAd("getAd")
                 .subscribeOn(Schedulers.io())

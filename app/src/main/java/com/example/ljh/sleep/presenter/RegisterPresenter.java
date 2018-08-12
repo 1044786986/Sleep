@@ -8,7 +8,6 @@ import com.example.ljh.sleep.application.RegexApp;
 import com.example.ljh.sleep.application.TipApp;
 import com.example.ljh.sleep.bean.RegisterRequestBean;
 import com.example.ljh.sleep.bean.RegisterResponseBean;
-import com.example.ljh.sleep.callback.AlertDialogCallback;
 import com.example.ljh.sleep.callback.MyRetrofitCallback;
 import com.example.ljh.sleep.contract.RegisterContract;
 import com.example.ljh.sleep.model.RegisterModel;
@@ -60,7 +59,7 @@ public class RegisterPresenter implements RegisterContract.RegisterPresenter{
                     //注册成功
                     if(bean.isStatus()){
                         ShowTipUtils.showAlertDialog(context, TipApp.REGISTER_SUCCESS, 1,
-                                new AlertDialogCallback() {
+                                new ShowTipUtils.AlertDialogCallback() {
                                     @Override
                                     public void positive() {
                                         registerView.finishThis();

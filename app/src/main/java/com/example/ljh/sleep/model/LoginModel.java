@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.example.ljh.sleep.application.ErrorTipApp;
-import com.example.ljh.sleep.application.SharedApp;
+import com.example.ljh.sleep.application.KeyApp;
 import com.example.ljh.sleep.bean.LoginBean;
 import com.example.ljh.sleep.callback.MyRetrofitCallback;
 import com.example.ljh.sleep.contract.LoginContract;
@@ -30,7 +30,7 @@ public class LoginModel implements LoginContract.LoginModel{
             callBack.onFailed(ErrorTipApp.PASSWORD_NULL);
         }else{
             username = EncodeUtils.ShaEncode(username);
-            RetrofitUtils.getRetrofitRx(RetrofitUtils.BASE_URL)
+            RetrofitUtils.getRetrofitRx2Gson(RetrofitUtils.BASE_URL)
                     .create(IRetrofit.class)
                     .login(username,password)
                     .subscribeOn(Schedulers.io())
@@ -63,23 +63,23 @@ public class LoginModel implements LoginContract.LoginModel{
     @Override
     public void loginCheckbox(Context context, LoginBean.LoginCheckBox checkBox,LoginBean loginBean) {
         SharedPreferences sharedPreferences =
-                context.getSharedPreferences(SharedApp.name,Context.MODE_PRIVATE);
+                context.getSharedPreferences(KeyApp.name,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(SharedApp.LOGIN_NAME,loginBean.getUsername());
+        editor.putString(KeyApp.LOGIN_NAME,loginBean.getUsername());
         if(checkBox.isAuto()){
             checkBox.setRemember(true);
-            editor.putBoolean(SharedApp.AUTO_LOGIN,true);
-            editor.putBoolean(SharedApp.REMEMBER_PASSWORD,true);
+            editor.putBoolean(KeyApp.AUTO_LOGIN,true);
+            editor.putBoolean(KeyApp.REMEMBER_PASSWORD,true);
         }else{
-            editor.putBoolean(SharedApp.AUTO_LOGIN,false);
+            editor.putBoolean(KeyApp.AUTO_LOGIN,false);
         }
 
         if(checkBox.isRemember()){
-            editor.putBoolean(SharedApp.REMEMBER_PASSWORD,true);
-            editor.putString(SharedApp.LOGIN_PASSWORD,loginBean.getPassword());
+            editor.putBoolean(KeyApp.REMEMBER_PASSWORD,true);
+            editor.putString(KeyApp.LOGIN_PASSWORD,loginBean.getPassword());
         }else{
-            editor.putBoolean(SharedApp.REMEMBER_PASSWORD,false);
-            editor.putString(SharedApp.LOGIN_PASSWORD,"");
+            editor.putBoolean(KeyApp.REMEMBER_PASSWORD,false);
+            editor.putString(KeyApp.LOGIN_PASSWORD,"");
         }
         editor.commit();
     }

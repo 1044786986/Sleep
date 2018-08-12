@@ -15,13 +15,13 @@ public class UpdateDuration {
         ThreadPoolUtils.threadPoolUtils.execute(new Runnable() {
             @Override
             public void run() {
-                Retrofit retrofit = RetrofitUtils.getRetrofit(RetrofitUtils.BASE_URL);
+                Retrofit retrofit = RetrofitUtils.getRetrofitGson(RetrofitUtils.BASE_URL);
                 IRetrofit iRetrofit = retrofit.create(IRetrofit.class);
                 Call<UpdateDurationBean> call = iRetrofit.updateDuration(id,duration);
                 call.enqueue(new Callback<UpdateDurationBean>() {
                     @Override
                     public void onResponse(Call<UpdateDurationBean> call, Response<UpdateDurationBean> response) {
-                        Log.i("aaa","UpdateDuration.onResponse = " + response);
+//                        Log.i("aaa","UpdateDuration.onResponse = " + response);
                     }
 
                     @Override

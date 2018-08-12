@@ -21,4 +21,10 @@ public class ErrorTipApp {
     public static final String EMAIL_EXIST = "该邮箱已被注册";
 
     public static final String VIEW_NULL = "View Not Attached";
+
+    public static final String FILE_EXIST = "该音频已在歌单里,确定要重新下载吗";
+    public static final String DOWNLOAD_START = "已添加到下载任务";
+    public static final String DOWNLOADING_EXIST = "该音频已在下载任务";
+    public static final String SURE_CANCEL_TASK = "确定要取消下载任务吗";
+    public static final String SURE_RELOAD_TASK = "确定要重新下载任务吗";
 }

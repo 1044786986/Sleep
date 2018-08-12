@@ -50,7 +50,7 @@ public class ShowStoryPresenter implements ShowStoryContract.ShowStoryPresenter{
                             MusicInfoBean bean1 = bean.getData().get(i);
                             dataList.add(bean1);
                         }
-                        bean = null;
+                        MainPresenter.curMusicList = dataList;
                         rvAdapter_showStory.notifyDataSetChanged();
                     }
                 }
@@ -73,32 +73,26 @@ public class ShowStoryPresenter implements ShowStoryContract.ShowStoryPresenter{
             @Override
             public void onSuccess(Object o) {
                 showStoryView.hideRefreshLayout();
-                ShowStoryResponseBean bean = (ShowStoryResponseBean) o;
-                if(bean.isStatus()){
+                ShowStoryResponseBean showStoryResponseBean = (ShowStoryResponseBean) o;
+                if(showStoryResponseBean.isStatus()){
                     dataList.clear();
-                    for(int i=0;i<bean.getData().size();i++){
-                        MusicInfoBean bean1 = bean.getData().get(i);
+                    for(int i=0;i<showStoryResponseBean.getData().size();i++){
+                        MusicInfoBean bean1 = showStoryResponseBean.getData().get(i);
+                        bean1.setPosition(i);
                         dataList.add(bean1);
                     }
-                    bean = null;
+                    MainPresenter.curMusicList = dataList;
                     rvAdapter_showStory.notifyDataSetChanged();
                 }
             }
 
             @Override
             public void onFailed(String error) {
-                showStoryView.hideProgressBar();
+                showStoryView.hideRefreshLayout();
                 ShowTipUtils.toastLong(showStoryView.getMyContext(),error);
             }
         });
     }
-
-
-//    @Override
-//    public void setMusicInfo(int i) {
-//        MusicInfoBean bean = dataList.get(i);
-//        SharedPreferencesUtils.setMusicInfo(showStoryView.getMyContext(),bean);
-//    }
 
     @Override
     public void initRvAdapter(RecyclerView recyclerView) {

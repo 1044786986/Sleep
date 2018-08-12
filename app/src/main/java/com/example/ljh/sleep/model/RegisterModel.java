@@ -15,7 +15,7 @@ import io.reactivex.schedulers.Schedulers;
 public class RegisterModel implements RegisterContract.RegisterModel {
     @Override
     public void register(RegisterRequestBean registerRequestBean, final MyRetrofitCallback callBack) {
-        RetrofitUtils.getRetrofitRx(RetrofitUtils.BASE_URL)
+        RetrofitUtils.getRetrofitRx2Gson(RetrofitUtils.BASE_URL)
                 .create(IRetrofit.class)
                 .register(registerRequestBean.getUsername(), registerRequestBean.getPassword(), registerRequestBean.getEmail())
                 .subscribeOn(Schedulers.io())

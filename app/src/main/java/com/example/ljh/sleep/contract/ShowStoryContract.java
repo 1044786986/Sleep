@@ -11,23 +11,23 @@ public class ShowStoryContract {
     public interface ShowStoryView{
         Context getMyContext();
         com.example.ljh.sleep.presenter.ShowStoryPresenter getPresenter();
-        boolean isViewCreate1(); //页面是否已完成ViewCreate();
-        boolean isVisible1();    //页面是否已对用户可见
+        boolean isViewCreate1();            //页面是否已完成ViewCreate();
+        boolean isVisible1();               //页面是否已对用户可见
         boolean isFirstOpen();
-        void resetFirstOpen();   //重置 是否第一次打开
-        void resetViewCreate();  //重置
-        void resetVisible();     //重置
+        void resetFirstOpen();              //重置 是否第一次打开
+        void resetViewCreate();             //重置 已ViewCreate()
+        void resetVisible();                //重置 是否已对用户可见
         void hideRefreshLayout();
         void showProgressBar();
         void hideProgressBar();
     }
 
     public interface ShowStoryPresenter{
-        void getData();
-        void upDate();
-//        void setMusicInfo(int i);    //记录当前播放的音乐信息
-        void initRvAdapter(RecyclerView recyclerView);
-        String getPositionType(int pos);
+        void getData();                                 //获取数据
+        void upDate();                                  //更新页面
+//        void setMusicInfo(int i);                     //记录当前播放的音乐信息
+        void initRvAdapter(RecyclerView recyclerView);  //初始化并绑定adapter
+        String getPositionType(int pos);                //获取页面类型
     }
 
     public interface ShowStoryModel{

@@ -12,8 +12,8 @@ public class RegisterContract {
         void showProgressBar();
         void hideProgressBar();
         void showToast(String string);
-        void finishThis();              //关闭页面
-        RegisterRequestBean getRegisterInfo(); //获取注册信息
+        void finishThis();                      //关闭页面
+        RegisterRequestBean getRegisterInfo();  //获取注册信息
     }
 
     public interface RegisterPresenter{
