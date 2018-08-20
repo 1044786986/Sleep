@@ -10,6 +10,5 @@ public interface DownLoadCallback {
     void onDowning(DownLoadBean downLoadBean);
     void onDownFinish(DownLoadBean downLoadBean);
     void onFailed(DownLoadBean downLoadBean,String error);
-    boolean onExist();
 }
 

@@ -6,11 +6,14 @@ import android.util.Log;
 
 import com.example.ljh.sleep.bean.DownLoadBean;
 import com.example.ljh.sleep.callback.DownLoadCallback;
+import com.socks.library.KLog;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
@@ -19,9 +22,9 @@ import java.net.URL;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class DownLoadTask extends Thread{
+public class DownLoadTask{
     private boolean mPause = true;                              //标记是否暂停任务
-    private boolean isInterrupt = false;
+    private volatile boolean isInterrupt = false;
     private boolean isSdCard = false;                           //是否有sd卡
     private boolean isTimer = false;                            //计时器是否开启
 
@@ -51,29 +54,18 @@ public class DownLoadTask extends Thread{
         }
     }
 
-    public DownLoadTask(Context context, final DownLoadBean downLoadBean, final DownLoadCallback callback){
-        if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
-            isSdCard = true;
-            DownLoadUtils2.mDownLoadDir = Environment.getExternalStorageDirectory()+"/sleepMusic/";
-            checkDir(DownLoadUtils2.mDownLoadDir);
-            mDownLoadBean = downLoadBean;
-            mDownLoadCallback = callback;
-            mContext = context;
-        }else{
-            isSdCard = false;
-        }
-    }
-
-    @Override
-    public void run() {
-        super.run();
-        Log.i("aaa","是不是一定执行呢");
-        if(mDownLoadType == DownLoadUtils2.DOWNLOAD || mDownLoadType == DownLoadUtils2.DOWNLAD_RELOAD){
-//            downLoad(mContext,mDownLoadBean,mDownLoadCallback);
-        }else if(mDownLoadType == DownLoadUtils2.DOWNLOAD_CONTINUE){
-
-        }
-    }
+//    public DownLoadTask(Context context, final DownLoadBean downLoadBean, final DownLoadCallback callback){
+//        if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
+//            isSdCard = true;
+//            DownLoadUtils2.mDownLoadDir = Environment.getExternalStorageDirectory()+"/sleepMusic/";
+//            checkDir(DownLoadUtils2.mDownLoadDir);
+//            mDownLoadBean = downLoadBean;
+//            mDownLoadCallback = callback;
+//            mContext = context;
+//        }else{
+//            isSdCard = false;
+//        }
+//    }
 
     /**
      * 下载任务
@@ -89,6 +81,7 @@ public class DownLoadTask extends Thread{
             ShowTipUtils.showAlertDialog(context,"未安装sd卡",1,null);
             return;
         }
+
         mDownLoadBean = downLoadBean;
         mDownLoadCallback = callback;
         final String url = downLoadBean.getUrl();
@@ -126,35 +119,56 @@ public class DownLoadTask extends Thread{
                  */
 
                 if(DownLoadUtils2.mTaskCount >= DownLoadUtils2.MAX_TASK_COUNT){
-                    try {
-                        synchronized (mRunnable){
-                            mPause = true;
-                            callback.onDownWait(downLoadBean);
-                            mRunnable.wait();
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+//                    try {
+//                        synchronized (mRunnable){
+//                            mPause = true;
+//                            callback.onDownWait(downLoadBean);
+//                            mRunnable.wait();
+//                        }
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
                 }
                 DownLoadUtils2.mTaskCount++;   //任务计数+1
                 mPause = false; //标记正在下载
                 InputStream inputStream = null;
                 OutputStream outputStream = null;
                 try {
+                    KLog.i("url = " + url);
                     HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(url).openConnection();
-                    httpURLConnection.setReadTimeout(5000);
+                    httpURLConnection.setReadTimeout(DownLoadUtils2.READ_TIME_OUT);
+                    httpURLConnection.setConnectTimeout(DownLoadUtils2.CONN_TIME_OUT);
+                    httpURLConnection.setRequestMethod("GET");
+//                    httpURLConnection.setRequestProperty("User-Agent",
+//                            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.75 Safari/537.36");
+//                    httpURLConnection.setRequestProperty("Accept","*/*");
+//                    httpURLConnection.setDoInput(true);
+//                    inputStream = httpURLConnection.getInputStream();
+                    inputStream = httpURLConnection.getErrorStream();
+                    if(inputStream != null){
+                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                        String i;
+                        String line="";
+                        while ((i = bufferedReader.readLine()) != null){
+                            line = line+i;
+                        }
+                        KLog.i("line = " + line);
+                    }
+
                     inputStream = httpURLConnection.getInputStream();
                     outputStream = new FileOutputStream(file);
                     byte bytes[] = new byte[4*1024];
                     int n;
                     mFileLength = httpURLConnection.getContentLength();        //总大小
-
+                    mDownLoadBean.setFilelength(mFileLength);
                     /**
                      * 网络连接成功
                      */
                     if(mFileLength > 0){
+
                         while ((n = inputStream.read(bytes)) != -1){
                             if(isInterrupt){
+                                callback.DownPause(mDownLoadBean);
                                 InterruptTask();
                                 return;
                             }
@@ -166,14 +180,14 @@ public class DownLoadTask extends Thread{
                             /**
                              * 暂停任务
                              */
-                            if(mPause){
-                                synchronized (mRunnable){
-                                    mPause = true;
-                                    stopTimer();
-                                    callback.onDownWait(mDownLoadBean);
-                                    mRunnable.wait();
-                                }
-                            }
+//                            if(mPause){
+//                                synchronized (mRunnable){
+//                                    mPause = true;
+//                                    stopTimer();
+//                                    callback.onDownWait(mDownLoadBean);
+//                                    mRunnable.wait();
+//                                }
+//                            }
                         }
                         //网络连接失败
                     }else{
@@ -192,8 +206,8 @@ public class DownLoadTask extends Thread{
                 } catch (IOException e) {
                     e.printStackTrace();
                     onFailed(callback,mDownLoadBean);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
                 } finally {
                     stopTimer();
                     DownLoadUtils2.mTaskCount--;
@@ -236,7 +250,11 @@ public class DownLoadTask extends Thread{
         mDownLoadCallback = callback;
         final String url = downLoadBean.getUrl();
         final String filePth = downLoadBean.getFilepath();
-        if(filePth == null){
+        mDownLoadLength = downLoadBean.getLength();
+        mFileLength = downLoadBean.getFilelength();
+        //当路径为空,则定义为第一次下载，重新设定路径,或当文件总大小为0，定义为重新下载
+        if(filePth == null || mFileLength == 0){
+            KLog.i("filepath ==  "+ filePth +"  mFileLength == " + mFileLength);
             downLoad(context,downLoadBean,callback);
             return;
         }
@@ -249,15 +267,7 @@ public class DownLoadTask extends Thread{
                  */
 
                 if(DownLoadUtils2.mTaskCount >= DownLoadUtils2.MAX_TASK_COUNT){
-                    try {
-                        synchronized (mRunnable){
-                            mPause = true;
-                            callback.onDownWait(downLoadBean);
-                            mRunnable.wait();
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+
                 }
                 DownLoadUtils2.mTaskCount++;   //任务计数+1
                 mPause = false; //标记正在下载
@@ -266,7 +276,7 @@ public class DownLoadTask extends Thread{
                 try {
                     File file = new File(filePth);
                     RandomAccessFile randomAccessFile = new RandomAccessFile(file,"rwd");
-                    randomAccessFile.seek(downLoadBean.getLength());
+                    randomAccessFile.seek(mDownLoadBean.getLength());
 
                     HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(url).openConnection();
                     httpURLConnection.setReadTimeout(DownLoadUtils2.READ_TIME_OUT);
@@ -274,6 +284,7 @@ public class DownLoadTask extends Thread{
                     httpURLConnection.setRequestMethod("GET");
                     httpURLConnection.setRequestProperty
                             ("Range","bytes=" + mDownLoadBean.getLength() + "-" + mDownLoadBean.getFilelength());
+                    KLog.i("bytes=" + mDownLoadBean.getLength() + "-" + mDownLoadBean.getFilelength());
                     /**
                      * 网络连接成功
                      */
@@ -284,7 +295,8 @@ public class DownLoadTask extends Thread{
                         int n;
                         while ((n = inputStream.read(bytes)) != -1){
                             if(isInterrupt){
-                                Thread.currentThread().interrupt();
+                                callback.DownPause(mDownLoadBean);
+                                InterruptTask();
                                 return;
                             }
                             randomAccessFile.write(bytes,0,n);
@@ -292,21 +304,21 @@ public class DownLoadTask extends Thread{
                             mDownLoadSpeedLength += n;                          //用来计算下载速度
                             mDownLoadBean.setStatus(DownLoadBean.DOWNLOAD_ING); //标记正在下载
                             startTimer();
-                            /**
-                             * 暂停任务
-                             */
-                            if(mPause){
-                                synchronized (mRunnable){
-                                    mPause = true;
-                                    stopTimer();
-                                    callback.onDownWait(mDownLoadBean);
-                                    mRunnable.wait();
-                                }
-                            }
+//                            /**
+//                             * 暂停任务
+//                             */
+//                            if(mPause){
+//                                synchronized (mRunnable){
+//                                    mPause = true;
+//                                    stopTimer();
+//                                    callback.onDownWait(mDownLoadBean);
+//                                    mRunnable.wait();
+//                                }
+//                            }
                         }
                         //网络连接失败
                     }else{
-                        Log.i("aaa","DownLoadUtils.fileLength<0");
+                        KLog.i("code != 206");
                         onFailed(callback,mDownLoadBean);
                         return;
                     }
@@ -319,29 +331,34 @@ public class DownLoadTask extends Thread{
                 } catch (IOException e) {
                     e.printStackTrace();
                     onFailed(callback,mDownLoadBean);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    onFailed(callback,mDownLoadBean);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                    onFailed(callback,mDownLoadBean);
                 } finally {
                     DownLoadUtils2.mTaskCount--;
                     stopTimer();
                     try {
-                        outputStream.flush();
-                        outputStream.close();
-                        inputStream.close();
+                        if(outputStream != null){
+                            outputStream.flush();
+                            outputStream.close();
+                        }
+                        if(inputStream != null){
+                            inputStream.close();
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
             }
         };
-//        CacheThreadPoolUtils.getInstance().execute(mRunnable);
+        CacheThreadPoolUtils.getInstance().execute(mRunnable);
     }
 
     private void onFailed(final DownLoadCallback callback, final DownLoadBean downLoadBean){
         callback.onFailed(downLoadBean, "下载失败");
         Thread.currentThread().interrupt();
     }
+
 
     /**
      * 开始任务
@@ -394,14 +411,16 @@ public class DownLoadTask extends Thread{
                 @Override
                 public void run() {
                     if(!mPause){
-                        mProgress = mDownLoadLength *100 / mFileLength;         //计算进度
-                        mDownLoadBean.setSpeed(mDownLoadSpeedLength / 1000);//计算速度
+                        mProgress = mFileLength == 0? 0 : mDownLoadLength *100 / mFileLength;  //计算进度
+//                        KLog.i("progress = " + mProgress);
+                        mDownLoadBean.setSpeed(mDownLoadSpeedLength / 1000);    //计算速度
                         mDownLoadBean.setLength(mDownLoadLength);               //保存已下载大小
                         mDownLoadBean.setProgress(mProgress);                   //保存已下载进度
                         mDownLoadCallback.onDowning(mDownLoadBean);
                         mDownLoadSpeedLength = 0;                               //重置每秒进度
                     }
                     if(isInterrupt){
+                        mDownLoadCallback.DownPause(mDownLoadBean);
                         InterruptTask();
                     }
                 }
@@ -420,10 +439,6 @@ public class DownLoadTask extends Thread{
             mTimer.cancel();
             isTimer = false;
         }
-    }
-
-    public Thread getThread(){
-        return mThread;
     }
 
     /**
@@ -452,12 +467,5 @@ public class DownLoadTask extends Thread{
         if(!file.exists()){
             file.mkdir();
         }
-    }
-
-    /**
-     * 更新进度监听
-     */
-    public interface UpdateProgress{
-        void updateProgress(DownLoadBean bean);
     }
 }

@@ -6,9 +6,8 @@ import com.example.ljh.sleep.bean.RegisterResponseBean;
 import com.example.ljh.sleep.bean.ShowStoryResponseBean;
 import com.example.ljh.sleep.bean.UpdateDurationBean;
 
-import java.io.InputStream;
-
 import io.reactivex.Observable;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -52,6 +51,6 @@ public interface IRetrofit {
     @POST("updateDuration")
     Call<UpdateDurationBean> updateDuration(@Field("id") int id, @Field("duration") String duration);
 
-    @GET("")
-    Observable<InputStream> downLoad();
+    @GET("storydata/101.mp3")
+    Observable<ResponseBody> downLoad();
 }

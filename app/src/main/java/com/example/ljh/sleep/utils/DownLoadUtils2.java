@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.example.ljh.sleep.bean.DownLoadBean;
 import com.example.ljh.sleep.callback.DownLoadCallback;
+import com.socks.library.KLog;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,9 +30,9 @@ public class DownLoadUtils2 {
     public static List<DownLoadTask> mTaskMap1 = new ArrayList<>();
     private static DownLoadUtils2 downLoadUtils2;
 
-    public static DownLoadUtils2 getInstance(){
-        if(downLoadUtils2 == null){
-            synchronized (DownLoadUtils2.class){
+    public static DownLoadUtils2 getInstance() {
+        if (downLoadUtils2 == null) {
+            synchronized (DownLoadUtils2.class) {
                 downLoadUtils2 = new DownLoadUtils2();
             }
         }
@@ -40,69 +41,66 @@ public class DownLoadUtils2 {
 
     /**
      * 下载任务
+     *
      * @param context
      * @param downLoadBean
      * @param callback
      */
-    public synchronized void downLoad(Context context, final DownLoadBean downLoadBean, final DownLoadCallback callback){
-//        DownLoadTask downLoadTask = new DownLoadTask(context,downLoadBean,callback);
+    public synchronized void downLoad(Context context, final DownLoadBean downLoadBean, int downLoadtype,
+                                      final DownLoadCallback callback) {
         DownLoadTask downLoadTask = new DownLoadTask();
-//        mTaskMap1.add(downLoadTask);
-        mTaskMap.put(downLoadBean.getId(),downLoadTask);
-//        downLoadTask.start();
-        downLoadTask.downLoad(context,downLoadBean,callback);
+        mTaskMap.put(downLoadBean.getId(), downLoadTask);
+        switch (downLoadtype) {
+            case DOWNLOAD:
+                downLoadTask.downLoad(context, downLoadBean, callback);
+                break;
+            case DOWNLOAD_CONTINUE:
+                downLoadTask.downLoadContinue(context, downLoadBean, callback);
+                break;
+            case DOWNLAD_RELOAD:
+                downLoadTask.downLoad(context, downLoadBean, callback);
+                break;
+        }
+
     }
 
     /**
      * 终止下载后继续下载
+     *
      * @param context
      * @param downLoadBean
      * @param callback
      */
-    public synchronized void downLoadContinue(Context context,DownLoadBean downLoadBean,DownLoadCallback callback){
+    public synchronized void downLoadContinue(Context context, DownLoadBean downLoadBean, DownLoadCallback callback) {
         DownLoadTask downLoadTask = new DownLoadTask();
         downLoadTask.setDownLoadType(DOWNLOAD_CONTINUE);
-        mTaskMap.put(downLoadBean.getId(),downLoadTask);
-        downLoadTask.downLoadContinue(context,downLoadBean,callback);
+        mTaskMap.put(downLoadBean.getId(), downLoadTask);
+        downLoadTask.downLoadContinue(context, downLoadBean, callback);
     }
 
     /**
      * 重新下载任务
+     *
      * @param context
      * @param downLoadBean
      * @param callback
      */
-    public synchronized void reLoad(Context context,DownLoadBean downLoadBean,DownLoadCallback callback){
-        for(int i=0;i<mTaskMap.size();i++){
-            if(downLoadBean.getId() == mTaskMap.valueAt(i).getDownLoadBean().getId()){
+    public synchronized void reLoad(Context context, DownLoadBean downLoadBean, DownLoadCallback callback) {
+        for (int i = 0; i < mTaskMap.size(); i++) {
+            if (downLoadBean.getId() == mTaskMap.valueAt(i).getDownLoadBean().getId()) {
                 CacheThreadPoolUtils.getInstance().remove(mTaskMap.valueAt(i).getRunnable());
                 mTaskMap.remove(i);
-                Log.i("aaa","DownLoadUtils2.移除任务");
+                Log.i("aaa", "DownLoadUtils2.移除任务");
                 break;
             }
         }
         DownLoadTask downLoadTask = new DownLoadTask();
         downLoadTask.setDownLoadType(DOWNLAD_RELOAD);
-        mTaskMap.put(downLoadBean.getId(),downLoadTask);
-        Log.i("aaa","DownLoadUtils2.任务存入集合");
-        downLoadTask.downLoad(context,downLoadBean,callback);
+        mTaskMap.put(downLoadBean.getId(), downLoadTask);
+        Log.i("aaa", "DownLoadUtils2.任务存入集合");
+        downLoadTask.downLoad(context, downLoadBean, callback);
     }
 
-    /**
-     * 移除任务
-     * @return
-     */
-    public synchronized void removeRunnable(DownLoadBean downLoadBean){
-        int id = downLoadBean.getId();
-        for(int i=0;i<DownLoadUtils2.mTaskMap.size();i++){
-            if(id == DownLoadUtils2.mTaskMap.keyAt(i)){
-//                CacheThreadPoolUtils.getInstance().remove(mTaskMap.valueAt(i).getRunnable());
-                mTaskMap.valueAt(i).stopTask();
-                Log.i("aaa","DownLoadTask.移除任务 " + mTaskMap.valueAt(i).getDownLoadBean().getName());
-                mTaskMap.remove(i);
-                break;
-            }
-        }
 //        for(int i=0;i<DownLoadUtils2.mTaskMap1.size();i++){
 //            if(id == DownLoadUtils2.mTaskMap1.get(i).getDownLoadBean().getId()){
 ////                CacheThreadPoolUtils.getInstance().remove(mTaskMap.valueAt(i).getRunnable());
@@ -111,7 +109,7 @@ public class DownLoadUtils2 {
 ////                mTaskMap1.remove(i);
 //                break;
 //            }
-        }
+//}
 
 
 //    public void stopTask(DownLoadBean downLoadBean){
@@ -133,29 +131,22 @@ public class DownLoadUtils2 {
         for(int i=0;i<DownLoadUtils2.mTaskMap.size();i++){
             if(downLoadBean.getId() == DownLoadUtils2.mTaskMap.valueAt(i).getDownLoadBean().getId()){
                 mTaskMap.valueAt(i).stopTask();
-                Log.i("aaa","DownLoadTask.终止线程 " + mTaskMap.valueAt(i).getDownLoadBean().getName());
+                KLog.i("DownLoadTask.终止线程 " + mTaskMap.valueAt(i).getDownLoadBean().getName());
                 mTaskMap.remove(i);
                 break;
             }
         }
     }
 
-    /**
-     * 网络出错取消任务
-     * @param
-     */
-    private void cancelRunnable(DownLoadBean downLoadBean){
-        int id = downLoadBean.getId();
-        for(int i=0;i<mTaskMap.size();i++){
-            if(id == mTaskMap.keyAt(i)){
-//                if(DownLoadUtils2.mTaskMap.valueAt(i).getRunnable() != null){
-                CacheThreadPoolUtils.getInstance().remove(mTaskMap.valueAt(i).getRunnable());
-//                }
-                mTaskMap.remove(i);
-                break;
-            }
-        }
-    }
+  public void stopAllTask(){
+      for(int i=0;i<DownLoadUtils2.mTaskMap.size();i++){
+          mTaskMap.valueAt(i).stopTask();
+          KLog.i("DownLoadTask.终止线程 " + mTaskMap.valueAt(i).getDownLoadBean().getName());
+          mTaskMap.remove(i);
+      }
+  }
+
+
 
     /**
      * 更新进度监听
@@ -164,3 +155,4 @@ public class DownLoadUtils2 {
         void updateProgress(DownLoadBean bean);
     }
 }
+

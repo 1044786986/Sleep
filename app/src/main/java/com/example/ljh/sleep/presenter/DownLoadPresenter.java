@@ -14,6 +14,7 @@ import com.example.ljh.sleep.contract.DownLoadContract;
 import com.example.ljh.sleep.model.DownLoadModel;
 import com.example.ljh.sleep.utils.DownLoadUtils;
 import com.example.ljh.sleep.utils.DownLoadUtils2;
+import com.example.ljh.sleep.utils.SQLiteUtils;
 import com.example.ljh.sleep.utils.ShowTipUtils;
 
 import java.util.ArrayList;
@@ -28,6 +29,9 @@ DownLoadContract.showPopupListener{
     private RvAdapterDownLoading mRvAdapterDownLoading;
     private List<DownLoadBean> mDownLoadedList;
     private List<DownLoadBean> mDownLoadingList;
+
+    private boolean mDownLoadingMulti = false;
+    private boolean mDownLoadedMulti = false;
 
     public DownLoadPresenter(DownLoadContract.DownLoadView downLoadView){
         mDownLoadView = downLoadView;
@@ -143,13 +147,14 @@ DownLoadContract.showPopupListener{
         for(int i=0;i<mDownLoadingList.size();i++){
             if(bean.getId() == mDownLoadingList.get(i).getId()){
                 int status = bean.getStatus();
-                if(status == DownLoadBean.DOWNLOAD_ING){
+                if(status == DownLoadBean.DOWNLOAD_ING){    //当任务正在下载时，暂停下载
                     DownLoadUtils2.getInstance().stopTask(bean);
                     mDownLoadingList.get(i).setStatus(DownLoadBean.DOWNLOAD_PAUSE);
                     updateDownLoading();
                     break;
-                }else{
-
+                }else{  //任务非正在下载状态时，调用继续下载
+                    MainActivity.getPresenter().downLoadContinue(bean);
+                    break;
                 }
             }
         }
@@ -179,6 +184,8 @@ DownLoadContract.showPopupListener{
                                 break;
                             }
                         }
+                        SQLiteUtils sqLiteUtils = new SQLiteUtils(mDownLoadView.getMyContext(),null);
+                        sqLiteUtils.deleteDownLoadInfo(downLoadBean);
                     }
 
                     @Override
@@ -222,7 +229,7 @@ DownLoadContract.showPopupListener{
      */
     @Override
     public void downLoadFinish(DownLoadBean downLoadBean) {
-        downLoadBean.setStatus(3);
+        downLoadBean.setStatus(DownLoadBean.DOWNLOAD_FINISH);
         for(int i=0;i < mDownLoadingList.size();i++){
             if(downLoadBean.getId() == mDownLoadingList.get(i).getId()){
                 mDownLoadingList.remove(i);
@@ -230,6 +237,28 @@ DownLoadContract.showPopupListener{
 //                mDownLoadModel.updateDownLoad(mDownLoadView.getMyContext(),downLoadBean);
 //                mDownLoadModel.insertMusicInfo(mDownLoadView.getMyContext(),downLoadBean);
                 updateDownLoaded();
+                updateDownLoading();
+                break;
+            }
+        }
+    }
+
+
+    public void downLoadFailed(DownLoadBean downLoadBean) {
+        for(int i=0;i < mDownLoadingList.size();i++){
+            if(downLoadBean.getId() == mDownLoadingList.get(i).getId()){
+                mDownLoadingList.get(i).setStatus(DownLoadBean.DOWNLOAD_ERROR);
+                updateDownLoading();
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void downLoadPause(DownLoadBean downLoadBean) {
+        for(int i=0;i < mDownLoadingList.size();i++){
+            if(downLoadBean.getId() == mDownLoadingList.get(i).getId()){
+                mDownLoadingList.get(i).setStatus(DownLoadBean.DOWNLOAD_PAUSE);
                 updateDownLoading();
                 break;
             }
@@ -260,6 +289,14 @@ DownLoadContract.showPopupListener{
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(mRvAdapterDownLoading);
         getDownLoading();
+    }
+
+    @Override
+    public void recycle() {
+        mDownLoadView = null;
+        mDownLoadModel = null;
+        mDownLoadingList = null;
+        mDownLoadedList = null;
     }
 
     @Override

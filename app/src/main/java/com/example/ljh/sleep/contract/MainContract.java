@@ -47,7 +47,8 @@ public class MainContract {
         void updateSecondProgress(int progress);        //加载缓冲进度条
         void seekToProgress();                          //拖动进度条播放音乐
         void getCurPosition();                          //获取当前音乐播放的时长
-        void downLoad(Object o,int downLoadType);       //下载音频
+        void downLoad(DownLoadBean bean,int downLoadType);//下载音频
+        void downLoadContinue(DownLoadBean bean);       //继续下载
         void reLoad(DownLoadBean downLoadBean);         //重新下载音频
         void rotationLogo();                            //开始旋转悬浮Logo
         void stopRotationLogo();                        //暂停旋转悬浮Logo

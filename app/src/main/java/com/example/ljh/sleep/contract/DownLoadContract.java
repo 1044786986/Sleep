@@ -30,8 +30,11 @@ public class DownLoadContract {
         void cancelTask(DownLoadBean downLoadBean);         //取消任务
         void reLoadTask(DownLoadBean downLoadBean);         //重新下载任务
         void downLoadFinish(DownLoadBean downLoadBean);     //任务下载完成
+        void downLoadFailed(DownLoadBean downLoadBean);
+        void downLoadPause(DownLoadBean downLoadBean);
         void initRvAdapterDownLoaded(RecyclerView recyclerView);
         void initRvAdapterDownLoading(RecyclerView recyclerView);
+        void recycle();
     }
 
     public interface DownLoadModel{

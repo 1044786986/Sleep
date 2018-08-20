@@ -12,7 +12,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class RetrofitUtils {
     public static final String IP = "192.168.1.105";
-    public static final String BASE_URL = "http://" + IP + "/sleep/";
+//    public static final String BASE_URL = "http://" + IP + "/sleep/";
+    public static final String BASE_URL = "http://www.liangjiehao.top/sleep/";
     private static final int READ_TIME = 5;
     private static final int CONN_TIME = 5;
     private static final OkHttpClient okHttpClient = new OkHttpClient.Builder()
@@ -20,6 +21,16 @@ public class RetrofitUtils {
             .connectTimeout(CONN_TIME,TimeUnit.SECONDS)
             .build();
     private static Retrofit retrofit;
+    private static RetrofitUtils mRetrofitUtils;
+
+    public static RetrofitUtils getInstance(){
+        if(mRetrofitUtils == null){
+            synchronized (RetrofitUtils.class){
+               mRetrofitUtils = new RetrofitUtils();
+            }
+        }
+        return mRetrofitUtils;
+    }
 
     public static Retrofit getRetrofitRx2Gson(String baseUrl){
         retrofit = new Retrofit.Builder()

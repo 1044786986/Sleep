@@ -77,15 +77,34 @@ public class RvAdapterDownLoading extends RecyclerView.Adapter<RvAdapterDownLoad
             holder.checkBox.setVisibility(View.VISIBLE);
 
         }
-        /**
-         * 长按触发多选
-         */
-        holder.parentView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                return false;
-            }
-        });
+
+        if(!mMultiSelection){
+            /**
+             * 长按触发多选
+             */
+            holder.parentView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    mMultiSelection = true;
+                    notifyDataSetChanged();
+                    return true;
+                }
+            });
+            /**
+             * 当处于多选状态时监听
+             */
+            holder.parentView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(holder.checkBox.isChecked()){
+                        holder.checkBox.setChecked(false);
+                    }else{
+                        holder.checkBox.setChecked(true);
+                    }
+                }
+            });
+        }
+
     }
 
     @Override

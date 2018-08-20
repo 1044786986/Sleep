@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.example.ljh.sleep.R;
 import com.example.ljh.sleep.activity.MainActivity;
+import com.example.ljh.sleep.bean.DownLoadBean;
 import com.example.ljh.sleep.bean.MusicInfoBean;
 import com.example.ljh.sleep.callback.MediaPlayerListener;
 import com.example.ljh.sleep.presenter.ShowStoryPresenter;
@@ -82,7 +83,14 @@ public class RvAdapter_ShowStory extends RecyclerView.Adapter<RvAdapter_ShowStor
         holder.ivDownLoad.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivity.getPresenter().downLoad(musicInfoBean, DownLoadUtils2.DOWNLOAD);
+                DownLoadBean downLoadBean = new DownLoadBean();
+                downLoadBean.setName(musicInfoBean.getName());
+                downLoadBean.setAuthor(musicInfoBean.getAuthor());
+                downLoadBean.setType(musicInfoBean.getType());
+                downLoadBean.setUrl(musicInfoBean.getUrl());
+                downLoadBean.setDuration(musicInfoBean.getDuration());
+                downLoadBean.setId(musicInfoBean.getId());
+                MainActivity.getPresenter().downLoad(downLoadBean, DownLoadUtils2.DOWNLOAD);
             }
         });
     }

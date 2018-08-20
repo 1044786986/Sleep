@@ -127,11 +127,17 @@ public class SQLiteUtils extends SQLiteOpenHelper{
         contentValues.put("url",bean.getUrl());
         contentValues.put("filepath",bean.getFilepath());
         contentValues.put("progress",0);
-        contentValues.put("length",0);
+        contentValues.put("length",bean.getFilelength());
         contentValues.put("filelength",bean.getFilelength());
         contentValues.put("date", GetDateUtils.getDate());
         contentValues.put("status",DownLoadBean.DOWNLOAD_WIAT);
         sqLiteDatabase.insert("download",null,contentValues);
+        sqLiteDatabase.close();
+    }
+
+    public void deleteDownLoadInfo(DownLoadBean bean){
+        sqLiteDatabase = getReadableDatabase();
+        sqLiteDatabase.execSQL("DELETE FROM download WHERE story_id=" + bean.getId());
         sqLiteDatabase.close();
     }
 
@@ -145,6 +151,7 @@ public class SQLiteUtils extends SQLiteOpenHelper{
         ContentValues contentValues = new ContentValues();
         contentValues.put("progress",bean.getProgress());
         contentValues.put("length",bean.getLength());
+        contentValues.put("filelength",bean.getFilelength());
         sqLiteDatabase.update("download",contentValues,"story_id="+bean.getId(),null);
         sqLiteDatabase.close();
     }

@@ -11,15 +11,45 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:background="#cdcdcd"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/dp_10"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
     <TextView
         android:text="正在下载"
         android:textSize="@dimen/sp_15"
-        android:background="#cdcdcd"
         android:gravity="center"
         android:padding="@dimen/dp_5"
-        android:layout_marginTop="@dimen/dp_10"
-        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_width="0dp"
         android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/ivDownLoadingMore"
+            android:src="@drawable/more"
+            android:layout_marginRight="@dimen/dp_5"
+            android:layout_width="@dimen/dp_30"
+            android:layout_height="@dimen/dp_30" />
+</LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout_downloadingAll"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+    <CheckBox
+        android:id="@+id/cbDownLoadingAll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+        <TextView
+            android:text="全选"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+</LinearLayout>
 
     <TextView
         android:id="@+id/tvTip1"
@@ -35,15 +65,45 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
 
-    <TextView
-        android:text="已下载"
-        android:textSize="@dimen/sp_15"
+    <LinearLayout
+        android:orientation="horizontal"
         android:background="#cdcdcd"
         android:gravity="center"
-        android:padding="@dimen/dp_5"
         android:layout_marginTop="@dimen/dp_10"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content">
+        <TextView
+            android:text="已下载"
+            android:textSize="@dimen/sp_15"
+            android:gravity="center"
+            android:padding="@dimen/dp_5"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/ivDownLoadedMore"
+            android:src="@drawable/more"
+            android:layout_marginRight="@dimen/dp_5"
+            android:layout_width="@dimen/dp_30"
+            android:layout_height="@dimen/dp_30" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout_downloadedAll"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <CheckBox
+            android:id="@+id/cbDownLoadedAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:text="全选"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/tvTip2"

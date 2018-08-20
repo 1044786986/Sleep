@@ -39,6 +39,7 @@ import com.example.ljh.sleep.utils.SQLiteUtils;
 import com.example.ljh.sleep.utils.SharedPreferencesUtils;
 import com.example.ljh.sleep.utils.ShowTipUtils;
 import com.example.ljh.sleep.utils.UpdateDuration;
+import com.socks.library.KLog;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -534,65 +535,41 @@ public class MainPresenter implements MainContract.MainPresenter,MediaPlayerList
      * @param
      */
     @Override
-    public void downLoad(Object o, final int downLoadType) {
-        DownLoadBean downLoadBean = null;
-        if(downLoadType == DownLoadUtils2.DOWNLOAD){
-            final MusicInfoBean bean = (MusicInfoBean)o;
-            downLoadBean = new DownLoadBean();
-            downLoadBean.setName(bean.getName());
-            downLoadBean.setAuthor(bean.getAuthor());
-            downLoadBean.setType(bean.getType());
-            downLoadBean.setUrl(bean.getUrl());
-            downLoadBean.setDuration(bean.getDuration());
-            downLoadBean.setId(bean.getId());
-
-            final DownLoadBean downLoadBean1 = downLoadBean;
-            /**
-             * 检查此音频是否正在下载或已下载
-             */
-            mainModel.checkDownLoadInfo(getView().getContext(), downLoadBean, new MainContract.CheckDownLoadCallback() {
-                @Override
-                public void onNoExist() {
-                    isDownLoadExist = false;
+    public void downLoad(DownLoadBean downLoadBean, final int downLoadType) {
+        //判断是否是第一次下载
+            if(downLoadType == DownLoadUtils2.DOWNLOAD){
+                /**
+                 * 检查此音频是否正在下载或已下载
+                 */
+                mainModel.checkDownLoadInfo(getView().getContext(), downLoadBean, new MainContract.CheckDownLoadCallback() {
+                    @Override
+                    public void onNoExist() {
+                        isDownLoadExist = false;
 //                SQLiteUtils sqLiteUtils = new SQLiteUtils(getView().getContext(),null);
 //                sqLiteUtils.insertDownLoadInfo(downLoadBean);
-                }
+                    }
 
-                @Override
-                public void onDownLoadingExist() {
-                    ShowTipUtils.toastShort(getView().getContext(),ErrorTipApp.DOWNLOADING_EXIST);
-                    isDownLoadExist = false;
-                }
+                    @Override
+                    public void onDownLoadingExist() {
+                        ShowTipUtils.toastShort(getView().getContext(),ErrorTipApp.DOWNLOADING_EXIST);
+                        isDownLoadExist = true;
+                    }
 
-                @Override
-                public void onDownLoadedExist() {
-                    ShowTipUtils.showAlertDialog(getView().getContext(), ErrorTipApp.FILE_EXIST, 2,
-                            new ShowTipUtils.AlertDialogCallback() {
-                                @Override
-                                public void positive() {
-                                    isDownLoadExist = false;
-                                    SQLiteUtils utils = new SQLiteUtils(getView().getContext(),null);
-                                    utils.removeMusicInfo(bean);
-//                                    utils.insertDownLoadInfo(downLoadBean1);
-                                }
-
-                                @Override
-                                public void negative() {
-                                    isDownLoadExist = true;
-                                }
-                            });
+                    @Override
+                    public void onDownLoadedExist() {
+                        ShowTipUtils.toastShort(getView().getContext(),"该音频已下载~~");
+                        isDownLoadExist = true;
+                    }
+                });
+                //取消下载
+                if(isDownLoadExist){
+                    return;
                 }
-            });
-            //取消下载
-            if(isDownLoadExist){
-                return;
             }
-        }else{
-            downLoadBean = (DownLoadBean)o;
-        }
 
         mEventBusBean = new EventBusBean();
-        DownLoadUtils2.getInstance().downLoad(getView().getContext(), downLoadBean, new DownLoadCallback() {
+        DownLoadUtils2.getInstance().downLoad(getView().getContext(), downLoadBean,downLoadType, new DownLoadCallback() {
+//        DownLoadUtils.getInstance().downLoad(getView().getContext(),downLoadBean,new DownLoadCallback(){
             //开始下载
             @Override
             public void onDownStart(DownLoadBean bean) {
@@ -614,6 +591,9 @@ public class MainPresenter implements MainContract.MainPresenter,MediaPlayerList
 
             @Override
             public void DownPause(DownLoadBean bean) {
+                bean.setStatus(DownLoadBean.DOWNLOAD_PAUSE);
+                SQLiteUtils sqLiteUtils = new SQLiteUtils(getView().getContext(),null);
+                sqLiteUtils.updateDownLoadStatus(bean);
                 mEventBusBean.setType("onDownPause");
                 mEventBusBean.setObject(bean);
                 EventBus.getDefault().post(mEventBusBean);
@@ -635,7 +615,6 @@ public class MainPresenter implements MainContract.MainPresenter,MediaPlayerList
 
             @Override
             public void onDownFinish(DownLoadBean bean) {
-//                DownLoadUtils2.getInstance().removeRunnable(bean);
                 DownLoadUtils2.getInstance().stopTask(bean);
                 mEventBusBean.setType("onDownFinish");
                 mEventBusBean.setObject(bean);
@@ -647,30 +626,23 @@ public class MainPresenter implements MainContract.MainPresenter,MediaPlayerList
 
             @Override
             public void onFailed(DownLoadBean downLoadBean, String error) {
+                KLog.i("下载失败");
                 DownLoadUtils2.getInstance().stopTask(downLoadBean);
-//                DownLoadUtils2.getInstance().removeRunnable(downLoadBean);
                 SQLiteUtils sqLiteUtils = new SQLiteUtils(getView().getContext(),null);
                 downLoadBean.setStatus(DownLoadBean.DOWNLOAD_ERROR);
+                mEventBusBean.setObject(downLoadBean);
+                mEventBusBean.setType("download_error");
+                EventBus.getDefault().post(mEventBusBean);
                 sqLiteUtils.updateDownLoadStatus(downLoadBean);
             }
-
-            @Override
-            public boolean onExist() {
-                ShowTipUtils.showAlertDialog(getView().getContext(), ErrorTipApp.FILE_EXIST,
-                        2, new ShowTipUtils.AlertDialogCallback() {
-                            @Override
-                            public void positive() {
-                                isDownLoadExist = true;
-                            }
-
-                            @Override
-                            public void negative() {
-                                isDownLoadExist = false;
-                            }
-                        });
-                return isDownLoadExist;
-            }
         });
+    }
+
+    @Override
+    public void downLoadContinue(DownLoadBean bean) {
+
+        DownLoadUtils2.getInstance().stopTask(bean);
+        downLoad(bean,DownLoadUtils2.DOWNLOAD_CONTINUE);
     }
 
     @Override

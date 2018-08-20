@@ -1,5 +1,6 @@
 package com.example.ljh.sleep.utils;
 
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -47,6 +48,10 @@ public class CacheThreadPoolUtils {
 
     public int getQueue(){
         return threadPoolExecutor.getQueue().size();
+    }
+
+    public BlockingQueue getQueueList(){
+        return threadPoolExecutor.getQueue();
     }
 
     public int  getActiveCount(){
